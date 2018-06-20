@@ -10,7 +10,7 @@ import (
 type Task struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
-	DONE bool 
+	DONE bool
 }
 
 // TaskCollection is collection of Tasks
@@ -65,10 +65,10 @@ func PutTask(db *sql.DB, name string) (int64, error) {
 	return result.LastInsertId()
 }
 
-// DoneTask 
+// DoneTask
 
 func DoneTask(db *sql.DB, id int) (int64, error) {
-	sql := "UPDATE tasks SET is_done = TRUE WHERE id = ?"
+	sql := "UPDATE tasks SET is_done = 'true' WHERE id = ?"
 
 	// Create a prepared SQL statement
 	stmt, err := db.Prepare(sql)

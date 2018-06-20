@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -54,6 +55,7 @@ func DoneTask(db *sql.DB) echo.HandlerFunc {
 			})
 			// Handle errors
 		} else {
+			fmt.Println("error: ", err)
 			return err
 		}
 	}

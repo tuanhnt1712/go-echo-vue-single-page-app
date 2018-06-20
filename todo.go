@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-
 	"go-echo-vue-single-page-app/handlers"
 
 	"github.com/labstack/echo"
@@ -11,7 +10,6 @@ import (
 )
 
 func main() {
-
 	db := initDB("storage.db")
 	migrate(db)
 
@@ -19,8 +17,8 @@ func main() {
 
 	e.File("/", "public/index.html")
 	e.GET("/tasks", handlers.GetTasks(db))
-	e.PUT("/tasks", handlers.PutTask(db))
-	e.POST("/tasks/:id", handlers.DoneTask(db))
+	e.PUT("/tasks/:id", handlers.DoneTask(db))
+	e.POST("/tasks", handlers.PutTask(db))
 	e.DELETE("/tasks/:id", handlers.DeleteTask(db))
 
 	e.Run(standard.New(":8000"))
@@ -46,7 +44,8 @@ func migrate(db *sql.DB) {
 	sql := `
 	CREATE TABLE IF NOT EXISTS tasks(
 		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		name VARCHAR NOT NULL
+		name VARCHAR NOT NULL,
+		is_done BOOL DEFAULT false
 	);
 	`
 
