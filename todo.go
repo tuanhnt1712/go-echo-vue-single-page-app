@@ -12,6 +12,8 @@ import (
 
 func main() {
 
+	// db := database.initDB("storage.db")
+	// database.migrate(db)
 	db := initDB("storage.db")
 	migrate(db)
 
@@ -19,9 +21,10 @@ func main() {
 
 	e.File("/", "public/index.html")
 	e.GET("/tasks", handlers.GetTasks(db))
-	e.PUT("/tasks", handlers.PutTask(db))
-	e.POST("/tasks/:id", handlers.DoneTask(db))
+	e.POST("/tasks", handlers.PutTask(db))
+	e.PUT("/tasks/:id", handlers.DoneTask(db))
 	e.DELETE("/tasks/:id", handlers.DeleteTask(db))
+	e.GET("/tasks_done", handlers.GetTasksDone(db))
 
 	e.Run(standard.New(":8000"))
 }
@@ -46,8 +49,13 @@ func migrate(db *sql.DB) {
 	sql := `
 	CREATE TABLE IF NOT EXISTS tasks(
 		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		name VARCHAR NOT NULL
-		is_done BOOLEAN
+		name VARCHAR NOT NULL,
+		is_done BOOL DEFAULT false
+	);
+	CREATE TABLE IF NOT EXISTS users(
+		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+		name VARCHAR NOT NULL,
+		email VARCHAR NOT NULL
 	);
 	`
 
