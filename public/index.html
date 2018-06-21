@@ -78,7 +78,7 @@
                         }
 
                         // Post the new task to the /tasks route using the $http client
-                        this.$http.put('/tasks', this.newTask).success(function(response) {
+                        this.$http.post('/tasks', this.newTask).success(function(response) {
                             this.newTask.id = response.created
                             this.tasks.push(this.newTask)
                             console.log("Task created!")
@@ -101,7 +101,7 @@
 
                     doneTask: function (index) {
                         // body...
-                        this.$http.post('/tasks/' + this.tasks[index].id).success(function(response) {
+                        this.$http.put('/tasks/' + this.tasks[index].id).success(function(response) {
                             this.tasks.splice(index, 1)
                             console.log("Task done!")
                         }).error(function(error) {
