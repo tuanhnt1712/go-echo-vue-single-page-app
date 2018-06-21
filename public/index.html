@@ -21,6 +21,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.min.js"></script>
     </head>
     <body>
+        <header>
+            <header1></header1>
+        </header>
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
@@ -51,15 +54,66 @@
                         </span>
                     </div><!-- /input-group -->
                 </div>
+                <div class="col-md-4">
+                    <h2>Task done</h2>
+                    <ul class="list-group">
+                        <li class="list-group-item" v-for="task_done in tasks_done">
+                            {{ task_done.name }}
+                            <!-- <span class="pull-right">
+                                <button class="btn btn-xs btn-danger" v-on:click="deleteTask($index)">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                </button>
+                            </span>
+                            <span class="pull-right">
+                                <button class="btn btn-xs btn-danger" v-on:click="doneTask($index)">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </button>
+                            </span> -->
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         <script>
+            Vue.component('header1', {
+                template:  `<div>
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                      <a class="navbar-brand" href="#">{{ logo }}</a>
+
+                      <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                      </form>
+
+                      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                          <li class="nav-item active">
+                            <router-link to="/" class="nav-link">Home</router-link>
+                          </li>
+                          <li class="nav-item">
+                            <router-link to="/message" class="nav-link">Friend</router-link>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#">Account</a>
+                          </li>
+                        </ul>
+                      </div>
+                    </nav>
+                    <router-view/>
+                  </div>
+                `,
+                data () {
+                    return {
+                      logo: 'FirstRoute'
+                    }
+                }
+            })
             new Vue({
                 el: 'body',
 
                 data: {
                     tasks: [],
-                    newTask: {}
+                    newTask: {},
+                    tasks_done: []
                 },
 
                 // This is run whenever the page is loaded to make sure we have a current task list
@@ -67,6 +121,9 @@
                     // Use the vue-resource $http client to fetch data from the /tasks route
                     this.$http.get('/tasks').then(function(response) {
                         this.tasks = response.data.items ? response.data.items : []
+                    }),
+                    this.$http.get('/tasks_done').then(function(response) {
+                        this.tasks_done = response.data.items ? response.data.items : []
                     })
                 },
 
@@ -78,7 +135,7 @@
                         }
 
                         // Post the new task to the /tasks route using the $http client
-                        this.$http.put('/tasks', this.newTask).success(function(response) {
+                        this.$http.post('/tasks', this.newTask).success(function(response) {
                             this.newTask.id = response.created
                             this.tasks.push(this.newTask)
                             console.log("Task created!")
@@ -101,7 +158,7 @@
 
                     doneTask: function (index) {
                         // body...
-                        this.$http.post('/tasks/' + this.tasks[index].id).success(function(response) {
+                        this.$http.put('/tasks/' + this.tasks[index].id).success(function(response) {
                             this.tasks.splice(index, 1)
                             console.log("Task done!")
                         }).error(function(error) {

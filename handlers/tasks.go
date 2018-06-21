@@ -19,6 +19,12 @@ func GetTasks(db *sql.DB) echo.HandlerFunc {
 	}
 }
 
+func GetTasksDone(db *sql.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return c.JSON(http.StatusOK, models.GetTasksDone(db))
+	}
+}
+
 // PutTask endpoint
 func PutTask(db *sql.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {

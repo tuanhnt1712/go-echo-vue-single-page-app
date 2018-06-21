@@ -18,9 +18,10 @@ type TaskCollection struct {
 	Tasks []Task `json:"items"`
 }
 
-// GetTasks from the DB
-func GetTasks(db *sql.DB) TaskCollection {
-	sql := "SELECT * FROM tasks"
+// Get TaskDone from DB
+
+func GetTasksDone(db *sql.DB) TaskCollection {
+	sql := "SELECT * FROM tasks WHERE is_done == 'true'"
 	rows, err := db.Query(sql)
 	// Exit if the SQL doesn't work for some reason
 	if err != nil {
@@ -32,7 +33,31 @@ func GetTasks(db *sql.DB) TaskCollection {
 	result := TaskCollection{}
 	for rows.Next() {
 		task := Task{}
-		err2 := rows.Scan(&task.ID, &task.Name)
+		err2 := rows.Scan(&task.ID, &task.Name, &task.DONE)
+		// Exit if we get an error
+		if err2 != nil {
+			panic(err2)
+		}
+		result.Tasks = append(result.Tasks, task)
+	}
+	return result
+}
+
+// GetTasks from the DB
+func GetTasks(db *sql.DB) TaskCollection {
+	sql := "SELECT * FROM tasks WHERE is_done is not 'true'"
+	rows, err := db.Query(sql)
+	// Exit if the SQL doesn't work for some reason
+	if err != nil {
+		panic(err)
+	}
+	// make sure to cleanup when the program exits
+	defer rows.Close()
+
+	result := TaskCollection{}
+	for rows.Next() {
+		task := Task{}
+		err2 := rows.Scan(&task.ID, &task.Name, &task.DONE)
 		// Exit if we get an error
 		if err2 != nil {
 			panic(err2)
@@ -68,7 +93,7 @@ func PutTask(db *sql.DB, name string) (int64, error) {
 // DoneTask 
 
 func DoneTask(db *sql.DB, id int) (int64, error) {
-	sql := "UPDATE tasks SET is_done = TRUE WHERE id = ?"
+	sql := "UPDATE tasks SET is_done = 'true' WHERE id = ?"
 
 	// Create a prepared SQL statement
 	stmt, err := db.Prepare(sql)
